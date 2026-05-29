@@ -1,44 +1,69 @@
-# Research Software Engineer Take Home Assessment
+# Safe Analytics Query Service
 
-## Safe Analytics Query Service
+## Description
 
-You are building a lightweight analytics service that allows users to query aggregate information from datasets in a safe and reproducible way.
-
-The service should:
-
-* Load structured data from CSV
-* Expose a simple API
-* Return aggregate statistics
-* Apply configurable safety rules
-* Generate audit logs
+FastAPI based lightweight analytics service that allows users to query aggregate information from datasets in a safe and reproducible way.
+The service load employee data from CSV, expose an API for aggression queries, apply configurable safety rules and generate audit logs.
 
 ---
-
 # Objective
 
+This project was developed as part of a Research Software Engineer Take Home Assessment.
 The goal of this exercise is to assess practical software engineering, API design, testing, validation logic, and problem solving skills.
 
-We are more interested in your engineering decisions, code quality, reasoning, and approach than production ready completeness. We don't expect a production grade implementation.  A clean and well reasoned solution is preferred over excessive features.
+---
+
+# Setup
+## Requirements
+The following software must be installed
+* Docker
+* Git
+## Installation
+1. clone the repo
+2. Configure Application settings (Optional)
+  * Edit root/src/config.py or Add .env file with configured variable to override
+  Eg:
+    Change SUPPRESSED = 2 in root/src/config.py to use suppression 2 with the project
+3. Build the docker image
+  Run docker build command from root/src directory
+  Eg:
+    ```bash
+    docker build -t buildname:tag .
+    ```
+4. Run the container
+  After successful build run the container and expose port
+   Eg:
+    ```bash
+    docker run -d -p 8000:8000 buildname:tag
+    ```
+5. Access the Application 
+  Once the application is started, then it can be accessed at the exposed host and port
+   Eg: http://localhost:8000/docs
 
 ---
 
-# Requirements
+# Tests
 
-## 1. Load a Dataset
-
-Your application should load the CSV dataset provided in:
-
-```text
-data/employees.csv
+Run tests using pytest
+Test coverage:
+   * validation logic
+   * suppression behaviour
+   * API response
+   * Filtering behaviour
+   * Model testing
+Example: 
+```json
+pytest tests
 ```
 
-You may use any language or framework.
-
 ---
 
-## 2. Expose an API
+# API Endpoints
 
-Create an API endpoint that allows querying aggregate statistics.
+## /query
+Querying aggregate statistics based on the group_by and filter fields
+* Request method: POST
+* Content type: application/json
 
 Example:
 
@@ -46,33 +71,13 @@ Example:
 POST /query
 ```
 
-Example request:
+* Example request:
 
 ```json
 {
   "group_by": "department"
 }
 ```
-
----
-
-## 3. Apply Safety Rules
-
-Results with counts below the suppression threshold should be suppressed.
-
-For this exercise, assume a default suppression threshold of `3`.
-
-Example:
-
-```json
-{
-  "Executive": "suppressed"
-}
-```
-
----
-
-## 4. Support Filtering
 
 Support simple filtering in queries.
 
@@ -87,11 +92,32 @@ Example:
 }
 ```
 
+* Example Response:
+Results with suppression threshold = 3
+```json
+{
+  "Engineering": 9,
+  "Finance": 3,
+  "HR": 3,
+  "Marketing": 3,
+  "Support": 3,
+  "Research": 4,
+  "Legal": 3,
+  "Executive": "suppressed"
+}
+```
 ---
+# API Documentation
 
-## 5. Generate Audit Logs
+  API documentation available at following location
+  * OpenAPI based - /docs
+  * Alternative - /redoc
+  * json schema - /openapi.json
 
-Each query should generate an audit log entry containing:
+---
+# Audit Logs & Application Logging
+
+Each query will generate an audit log entry in DB containing:
 
 * timestamp
 * query details
@@ -109,149 +135,18 @@ Example:
   "suppression_triggered": true
 }
 ```
+Application logging will be generated in {root}/logs directory
 
 ---
+# Assumptions
 
-## 6. Containerise the Application
-
-Please provide:
-
-* Dockerfile
-* simple run instructions
+Following assumptions were made during development
+1. Dataset is loaded during the application startup
+2. Suppression threshould default to 3
 
 ---
-
-## 7. Include Basic Tests
-
-Please include a few tests where appropriate.
-
-Examples:
-
-* validation logic
-* suppression behaviour
-* API responses
-* filtering behaviour
-
----
-
-# Dataset
-
-Dataset file:
-
-```text
-data/employees.csv
-```
-
-# Example Scenarios
-
-## Example 1: Standard Aggregation
-
-Request:
-
-```bash
-curl -X POST http://localhost:8080/query \
-  -H "Content-Type: application/json" \
-  -d '{
-    "group_by": "department"
-  }'
-```
-
-Expected response:
-
-```json
-{
-  "Engineering": 9,
-  "Finance": 3,
-  "HR": 3,
-  "Marketing": 3,
-  "Support": 3,
-  "Research": 4,
-  "Legal": 3,
-  "Executive": "suppressed"
-}
-```
-
-Explanation:
-
-Records are aggregated by department and returned as counts. Departments with counts greater than or equal to the suppression threshold are returned normally.
-
-Departments below the suppression threshold are suppressed to reduce the risk of exposing sensitive or identifiable information.
-
----
-
-## Example 2: Filtering and Suppression Scenario
-
-Request:
-
-```bash
-curl -X POST http://localhost:8080/query \
-  -H "Content-Type: application/json" \
-  -d '{
-    "group_by": "department",
-    "filter": {
-      "location": "Manchester"
-    }
-  }'
-```
-
-Expected response:
-
-```json
-{
-  "Engineering": "suppressed",
-  "Finance": "suppressed",
-  "Marketing": "suppressed",
-  "HR": "suppressed",
-  "Research": "suppressed",
-  "Support": "suppressed",
-  "Legal": "suppressed",
-  "Executive": "suppressed"
-}
-```
-
-Explanation:
-
-The dataset is first filtered to include only employees located in Manchester. The remaining records are then grouped by department.
-
-Because each department contains fewer than the suppression threshold number of records after filtering, all results are suppressed.
-
----
-
-## Example 3: Invalid Column
-
-Request:
-
-```bash
-curl -X POST http://localhost:8080/query \
-  -H "Content-Type: application/json" \
-  -d '{
-    "group_by": "unknown_column"
-  }'
-```
-
-Expected response:
-
-```json
-{
-  "error": "Invalid group_by field: unknown_column"
-}
-```
-
-Explanation:
-
-The request attempts to group by a column that does not exist in the dataset.
-
-The service should validate incoming requests and return a clear validation error instead of failing unexpectedly.
-
----
-
-# Submission Instructions
-
-Please fork this repository and implement your solution in your own fork.
-
-Once completed, please share the GitHub repository link as your submission.
-
-Please include:
+# Submission Contents
+The repository includes:
 
 * source code
 * README updates if required
@@ -261,8 +156,3 @@ Please include:
 
 ---
 
-# Notes
-
-You are free to make reasonable assumptions where requirements are ambiguous.
-
-Please document any assumptions clearly in the README.

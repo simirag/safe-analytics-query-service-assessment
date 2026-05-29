@@ -43,8 +43,7 @@ class AnalyticsService:
         suppressed = "False"
         for stat in stats:
             result[stat[0]] = stat[1]
-            # stat[1] if stat[1] > settings.SUPPRESSED else "Suppressed"
-            if stat[1] <= settings.SUPPRESSED:
+            if stat[1] < settings.SUPPRESSED:
                 result[stat[0]] = "Suppressed"
                 suppressed = "True"
 

@@ -22,7 +22,7 @@ class FilterOption(str, Enum):
 class AnalyticsQuery(BaseModel):
     """Pydantic model for an analytics query."""
 
-    group_by: str | None = None
+    group_by: str
     filter: dict[str, str] | None = None
 
     model_config = {
