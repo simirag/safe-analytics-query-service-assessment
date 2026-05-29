@@ -7,6 +7,7 @@ The service load employee data from CSV, expose an API for aggression queries, a
 
 ---
 # Objective
+
 This project was developed as part of a Research Software Engineer Take Home Assessment.
 The goal of this exercise is to assess practical software engineering, API design, testing, validation logic, and problem solving skills.
 ---
@@ -60,9 +61,8 @@ pytest tests
 
 ## /query
 Querying aggregate statistics based on the group_by and filter fields
-Request method: POST
-Parameter Type: Body
-Application type: application/json
+* Request method: POST
+* Content type: application/json
 
 Example:
 
@@ -70,7 +70,7 @@ Example:
 POST /query
 ```
 
-*Example request:
+* Example request:
 
 ```json
 {
@@ -91,7 +91,7 @@ Example:
 }
 ```
 
-*Example Response:
+* Example Response:
 Results with suppression threshold = 3
 ```json
 {
@@ -107,10 +107,11 @@ Results with suppression threshold = 3
 ```
 ---
 # API Documentation
+
   API documentation available at following location
-  OpenAPI based - /docs
-  Alternative - /redoc
-  json schema - /openapi.json
+  * OpenAPI based - /docs
+  * Alternative - /redoc
+  * json schema - /openapi.json
 
 ---
 # Audit Logs & Application Logging
@@ -134,18 +135,8 @@ Example:
 }
 ```
 Application logging will be generated in {root}/logs directory
----
-
-## 6. Containerise the Application
-
-Please provide:
-
-* Dockerfile
-* simple run instructions
 
 ---
-
-
 # Assumptions
 
 Following assumptions were made during development
@@ -153,7 +144,6 @@ Following assumptions were made during development
 2. Suppression threshould default to 3
 
 ---
-
 # Submission Contents
 The repository includes:
 
