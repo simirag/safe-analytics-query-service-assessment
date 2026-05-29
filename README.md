@@ -10,6 +10,7 @@ The service load employee data from CSV, expose an API for aggression queries, a
 
 This project was developed as part of a Research Software Engineer Take Home Assessment.
 The goal of this exercise is to assess practical software engineering, API design, testing, validation logic, and problem solving skills.
+
 ---
 
 # Setup
