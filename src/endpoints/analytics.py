@@ -7,6 +7,7 @@ from fastapi import Body
 from ..database import get_db
 from ..config import settings
 from ..schemas.analytics import AnalyticsQuery, EmployeeStatistics
+from ..schemas.audit import AuditLogSchema
 from ..services.analytics import AnalyticsService
 from ..core.exceptions import InvalidQueryException
 from ..core.logger import get_logger
@@ -47,7 +48,7 @@ async def query_analytics(
         )
     
 @router.get("/audit-log")
-async def get_audit_log(db: Session = Depends(get_db)):
+async def get_audit_log(db: Session = Depends(get_db)) -> list[AuditLogSchema]:
     service = AuditService(db)
     logs = service.get_audit_logs()
-    return logs
+    return [AuditLogSchema(**log.to_dict()) for log in logs]
