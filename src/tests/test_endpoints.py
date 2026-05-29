@@ -26,6 +26,14 @@ class TestAnalyticsAPI:
         assert response.status_code == 200
         assert "error" in response.json()
     
+    def test_query_analytics_no_group_by(self, client):
+        response = client.post("/query", json={
+            "filter": {
+                "location": "New York"
+            }
+        })
+        assert response.status_code == 422
+
     def test_query_analytics_invalid_filter(self, client):
         response = client.post("/query", json={
             "group_by": "department",
