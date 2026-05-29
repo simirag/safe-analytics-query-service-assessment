@@ -3,9 +3,8 @@ class AuditService:
     def __init__(self, db_session):
         self.db_session = db_session
 
-    def log_audit(self, action, group_by=None, filter=None, suppression_triggered=None):
+    def log_audit(self, group_by=None, filter=None, suppression_triggered=None):
         audit_log = AuditLog(
-            action=action,
             group_by=group_by,
             filter=filter,
             suppression_triggered=suppression_triggered

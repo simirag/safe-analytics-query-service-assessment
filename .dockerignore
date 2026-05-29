@@ -17,3 +17,4 @@ alembic.ini
 *.db
 src/*.db
 Dockerfile
+.pytest_cache

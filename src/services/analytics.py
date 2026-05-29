@@ -40,15 +40,14 @@ class AnalyticsService:
         stats = query.all()
 
         result = {}
-        suppressed = "False"
+        suppressed = False
         for stat in stats:
             result[stat[0]] = stat[1]
             if stat[1] < settings.SUPPRESSED:
                 result[stat[0]] = "Suppressed"
-                suppressed = "True"
+                suppressed = True
 
         self.audit_service.log_audit(
-            action="query_analytics",
             group_by=group_by,
             filter=json.dumps(filter_data) if filter_data else None,
             suppression_triggered=suppressed
