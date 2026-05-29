@@ -13,7 +13,7 @@ class AnalyticsService:
         self.db = db
         self.audit_service = AuditService(db)
 
-    def get_employee_statistics(self, group_by, filter_data):
+    def get_employee_statistics(self, group_by: str, filter_data: dict[str, str] | None):
         """Get aggregated employee statistics.
         Args:
             group_by (str | None): The attribute to group by (e.g., department, location).
